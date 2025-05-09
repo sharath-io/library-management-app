@@ -16,7 +16,7 @@ const Navigation = () => {
   return (
     <ul className="p-2">
       {
-        menuItems.map(({title,path},index) =>  <li  className={`my-2 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white ${currentIndex===index || path===pathname ? 'bg-primary text-white' : 'bg-white text-black' }`} onClick={()=>handleNavigation(path,index)}>
+        menuItems.map(({title,path},index) =>  <li key={title}  className={`my-2 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white ${currentIndex===index || path===pathname ? 'bg-primary text-white' : 'bg-white text-black' }`} onClick={()=>handleNavigation(path,index)}>
             <Link to={path} >{title}</Link>
           </li>)
       }
