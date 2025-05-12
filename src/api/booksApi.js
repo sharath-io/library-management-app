@@ -10,3 +10,14 @@ export const getBooks = async () => {
 
   return books;
 };
+
+export const addBook = async (book) => {
+  const { data, error } = await supabase.from("books").insert([book]).select();
+
+  if (error) {
+    console.log(error);
+    throw new Error("Error while adding list of books.Try again later");
+  }
+
+  return data;
+};
