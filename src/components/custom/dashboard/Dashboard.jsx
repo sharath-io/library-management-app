@@ -5,13 +5,15 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import { getBooks } from "@/api/booksApi";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Edit, Search, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [searchText, setSearchText] = useState("");
-  // Column Definitions: Defines the columns to be displayed.
-  const [colDefs, setColDefs] = useState([
+  const navigate = useNavigate();
+
+  const colDefs = useRef([
     { field: "name" },
     { field: "author" },
     { field: "publisher" },
@@ -25,8 +27,8 @@ const Dashboard = () => {
     {
       field: "edit",
       maxWidth: 100,
-      cellRenderer: () => (
-        <div className="py-2 cursor-pointer">
+      cellRenderer: (params) => (
+        <div className="py-2 cursor-pointer" onClick={()=> navigate(`/books/${params.data.id}`)}>
           <Edit color="grey" />
         </div>
       ),
@@ -41,6 +43,10 @@ const Dashboard = () => {
       ),
     },
   ]);
+  
+  // Column Definitions: Defines the columns to be displayed.
+  // const [colDefs, setColDefs] = useState(
+  //   );
   const { data: books, error } = useQuery({
     queryKey: ["books"],
     queryFn: getBooks,
@@ -68,7 +74,7 @@ const Dashboard = () => {
         <div style={{ height: 500 }}>
           <AgGridReact
             rowData={books}
-            columnDefs={colDefs}
+            columnDefs={colDefs.current}
             pagination={true}
             quickFilterText={searchText}
           />

@@ -8,10 +8,6 @@ export const menuItems = [
         path:'/addBook'
     },
     {
-        title:'Edit Book',
-        path:'/editBook'
-    },
-    {
         title:'Students List',
         path:'/studentsList'
     },

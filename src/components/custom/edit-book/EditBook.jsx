@@ -1,111 +1,57 @@
-"use client";
+import React from "react";
+import BookForm from "../book-form/BookForm";
+import { getSingleBook, updateBook } from "@/api/booksApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+const EditBook = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
-const formSchema = z.object({
-  name: z.string().refine((val) => val.trim() !== "", "This is required field"),
-  author: z
-    .string()
-    .refine((val) => val.trim() !== "", "This is required field"),
-  publisher: z
-    .string()
-    .refine((val) => val.trim() !== "", "This is required field"),
-  isbn: z.string().refine((val) => val.trim() !== "", "This is required field"),
-});
-
-const EditBook = ({handleFormSubmit, isPending}) => {
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      author: "",
-      publisher: "",
-      isbn: "",
-    },
+  const {
+    data: book,
+    isPending: { bookIsPending },
+    error,
+  } = useQuery({
+    queryKey: ["singlebook", id],
+    queryFn: () => getSingleBook(id),
   });
 
-  // 2. Define a submit handler.
-  async function onSubmit(values) {
-   const isSuccess=  await handleFormSubmit(values);
-   if(isSuccess){
-    form.reset();
-   }
-  }
+  const { isPending, mutateAsync } = useMutation({
+    mutationKey: ["editBook"],
+    mutationFn: updateBook,
+    onSuccess: () => {
+      toast("✅ Book is updated successfully");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    },
+    onError: (error) => toast(` ❌ ${error.message}`),
+  });
 
+  const handleFormSubmit = async ({ id, book }) => {
+    try {
+      await mutateAsync({ id, book });
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
   return (
-    <div className="max-w-[500px] mx-auto">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter book name" {...field}/>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="author"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Author</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter author name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="publisher"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Publisher</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter publisher name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="isbn"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>ISBN</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter isbn number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full cursor-pointer" disabled={isPending}>
-            Add Book
-          </Button>
-        </form>
-      </Form>
+    <div>
+      <h2 className="text-3xl text-center tracking-wdider">Edit Book : {id}</h2>
+      {error && (
+        <p className="text-center text-2xl text-red-500">{error.message}</p>
+      )}
+      {bookIsPending && <p className="text-center text-2xl">Loading....</p>}
+      <BookForm
+        key={book?.id}
+        handleFormSubmit={handleFormSubmit}
+        isPending={isPending || bookIsPending}
+        book={book}
+      />
     </div>
   );
 };
