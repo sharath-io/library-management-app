@@ -1,11 +1,12 @@
 import React from "react";
 import BookForm from "../book-form/BookForm";
 import { getSingleBook, updateBook } from "@/api/booksApi";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const EditBook = () => {
+  const queryClient = useQueryClient();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -23,6 +24,9 @@ const EditBook = () => {
     mutationFn: updateBook,
     onSuccess: () => {
       toast("✅ Book is updated successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["books"],
+      });
       setTimeout(() => {
         navigate("/dashboard");
       }, 1000);

@@ -3,15 +3,29 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 
 // Register all Community features
 ModuleRegistry.registerModules([AllCommunityModule]);
-import { getBooks } from "@/api/booksApi";
-import { useQuery } from "@tanstack/react-query";
+import { deleteBook, getBooks } from "@/api/booksApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Dashboard = () => {
+  const queryClient = useQueryClient();
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
+
+  const { mutate } = useMutation({
+    mutationKey: ["deleteBook"],
+    mutationFn: deleteBook,
+    onSuccess: () => {
+      toast("✅ Book is deleted");
+      queryClient.invalidateQueries({
+        queryKey: ["books"],
+      });
+    },
+    onError: (error) => toast(` ❌ ${error.message}`),
+  });
 
   const colDefs = useRef([
     { field: "name" },
@@ -28,7 +42,10 @@ const Dashboard = () => {
       field: "edit",
       maxWidth: 100,
       cellRenderer: (params) => (
-        <div className="py-2 cursor-pointer" onClick={()=> navigate(`/books/${params.data.id}`)}>
+        <div
+          className="py-2 cursor-pointer"
+          onClick={() => navigate(`/books/${params.data.id}`)}
+        >
           <Edit color="grey" />
         </div>
       ),
@@ -36,14 +53,24 @@ const Dashboard = () => {
     {
       field: "delete",
       maxWidth: 100,
-      cellRenderer: () => (
-        <div className="py-2 cursor-pointer">
+      cellRenderer: (params) => (
+        <div
+          className="py-2 cursor-pointer"
+          onClick={() => {
+            const resp = window.confirm(
+              "Are you sure you want to delete selected book"
+            );
+            if (resp) {
+              mutate(params.data.id);
+            }
+          }}
+        >
           <Trash2 color="red" />
         </div>
       ),
     },
   ]);
-  
+
   // Column Definitions: Defines the columns to be displayed.
   // const [colDefs, setColDefs] = useState(
   //   );

@@ -1,15 +1,26 @@
 import React from "react";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addBook } from "@/api/booksApi";
 import { toast } from "sonner";
 import BookForm from "../book-form/BookForm";
+import { useNavigate } from "react-router-dom";
 
 const AddBook = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { isPending, error, mutateAsync } = useMutation({
     mutationKey: ["addBook"],
     mutationFn: addBook,
-    onSuccess: () => toast("✅ Book is added successfully"),
+    onSuccess: () => {
+      toast("✅ Book is added successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["books"],
+      });
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    },
     onError: (error) => toast(` ❌ ${error.message}`),
   });
 

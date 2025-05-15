@@ -9,7 +9,7 @@ const Navigation = () => {
 
   const handleNavigation = (path, index) => {
     setCurrentIndex(index);
-    console.log(path);
+    console.log("from navigation", path);
     navigate(path);
   };
 
