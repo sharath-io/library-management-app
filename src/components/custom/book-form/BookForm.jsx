@@ -41,7 +41,7 @@ const BookForm = ({ handleFormSubmit, isPending, book }) => {
   async function onSubmit(values) {
     if (book) {
       //edit
-      await handleFormSubmit({ id:book?.id, book: values });
+      await handleFormSubmit({ id: book?.id, book: values });
     } else {
       // add
       const isSuccess = await handleFormSubmit(values);

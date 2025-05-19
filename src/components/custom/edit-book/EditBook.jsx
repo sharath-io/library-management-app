@@ -27,6 +27,9 @@ const EditBook = () => {
       queryClient.invalidateQueries({
         queryKey: ["books"],
       });
+      queryClient.invalidateQueries({
+         queryKey: ["singlebook", id],
+      });
       setTimeout(() => {
         navigate("/dashboard");
       }, 1000);
@@ -49,7 +52,7 @@ const EditBook = () => {
       {error && (
         <p className="text-center text-2xl text-red-500">{error.message}</p>
       )}
-      {bookIsPending && <p className="text-center text-2xl">Loading....</p>}
+      {bookIsPending && <p className="text-center text-2xl my-3">Loading....</p>}
       <BookForm
         key={book?.id}
         handleFormSubmit={handleFormSubmit}

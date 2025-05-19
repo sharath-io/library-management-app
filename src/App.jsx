@@ -13,6 +13,7 @@ import EditBook from "./components/custom/edit-book/EditBook";
 import ProtectedRoute from "./components/custom/protected-route/ProtectedRoute";
 import Header from "./components/custom/header/Header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import EditStudent from "./components/custom/edit-student/EditStudent";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/addBook" element={<AddBook />} />
             <Route path="/books/:id" element={<EditBook />} />
             <Route path="/studentsList" element={<StudentsList />} />
+            <Route path="/students/:id" element={<EditStudent />} />
             <Route path="/addStudent" element={<AddStudent />} />
             <Route path="/issueBook" element={<IssueBook />} />
             <Route path="/returnBook" element={<ReturnBook />} />
