@@ -66,3 +66,34 @@ export const deleteBook = async (id) => {
     throw new Error("Error while deleting book. Try again later");
   }
 };
+
+// steps
+// 1. getall books which are assigned and there in table => student_books
+// 2. make them into a string ( , )
+// 3. know extract books which are not assigned using not in syntax
+export const getUnassignedBooks = async () => {
+  const { data: student_books, error } = await supabase
+    .from("student_books")
+    .select("book_id");
+
+  if (error) {
+    console.log(error);
+    throw new Error(
+      "Error while getting list of assigned books.Try again later"
+    );
+  }
+
+  const bookIds = student_books.map((book) => book.book_id).join(",");
+
+  const { data: books, error: booksError } = await supabase
+    .from("books")
+    .select("*")
+    .not("id", "in", `(${bookIds})`);
+  if (booksError) {
+    console.log(booksError);
+    throw new Error(
+      "Error while getting list of unassigned books.Try again later"
+    );
+  }
+  return books;
+};
