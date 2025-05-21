@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import supabase from "../utils/supabase";
 
 export const getBooks = async () => {
@@ -95,5 +94,33 @@ export const getUnassignedBooks = async () => {
       "Error while getting list of unassigned books.Try again later"
     );
   }
+  return books;
+};
+
+export const getAssignedBooks = async () => {
+  const { data: student_books, error } = await supabase
+    .from("student_books")
+    .select("book_id");
+
+  if (error) {
+    console.log(error);
+    throw new Error(
+      "Error while getting list of assigned books.Try again later"
+    );
+  }
+
+  const bookIds = student_books.map((book) => book.book_id);
+
+  const { data: books, error: booksError } = await supabase
+    .from("books")
+    .select("*")
+    .in("id", bookIds);
+  if (booksError) {
+    console.log(booksError);
+    throw new Error(
+      "Error while getting list of assigned book details.Try again later"
+    );
+  }
+  console.log("from api assigned books", books);
   return books;
 };

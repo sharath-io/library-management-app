@@ -40,7 +40,7 @@ function DropDown({ data, title, updateSelection }) {
         <Command>
           <CommandInput placeholder={`Search ${title}`} />
 
-          <CommandEmpty>No item found.</CommandEmpty>
+          <CommandEmpty>No {title} found.</CommandEmpty>
           <CommandGroup>
             {data?.map((item) => (
               <CommandList key={item.value}>
@@ -61,6 +61,7 @@ function DropDown({ data, title, updateSelection }) {
                       value === item.value ? "opacity-100" : "opacity-0"
                     )}
                   />
+                  {item.label}
                 </CommandItem>
               </CommandList>
             ))}

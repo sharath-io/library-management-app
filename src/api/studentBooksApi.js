@@ -13,3 +13,16 @@ export const issueBook = async ({ book_id, student_id }) => {
 
   return data;
 };
+
+export const returnBook = async ({ book_id }) => {
+  const { data, error } = await supabase
+    .from("student_books")
+    .delete()
+    .eq("book_id", book_id);
+
+  if (error) {
+    console.log("api error", error);
+    throw new Error("Error while returning book. Try again later");
+  }
+  return data;
+};

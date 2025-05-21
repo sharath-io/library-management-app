@@ -53,6 +53,9 @@ const IssueBook = () => {
       queryClient.invalidateQueries({
         queryKey: ["unassignedBooks"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["assignedBooks"],
+      });
     },
     onError: (error) => toast(` ❌ heyyy ${error.message}`),
   });
