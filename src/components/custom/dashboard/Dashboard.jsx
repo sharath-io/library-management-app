@@ -9,8 +9,11 @@ import React, { useRef, useState } from "react";
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { getStudentByBookId } from "@/api/studentsApi";
+import StudentDialog from "../student-dialog/StudentDialog";
 
 const Dashboard = () => {
+  const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
@@ -34,8 +37,13 @@ const Dashboard = () => {
     { field: "isbn" },
     {
       field: "assignedTo",
-      cellRenderer: () => (
-        <span className="underline cursor-pointer">student</span>
+      cellRenderer: (params) => (
+        <span
+          className="underline cursor-pointer"
+          onClick={() => getStudentInfo(params.data.id)}
+        >
+          student
+        </span>
       ),
     },
     {
@@ -79,16 +87,31 @@ const Dashboard = () => {
     queryFn: getBooks,
   });
 
+  const {
+    data: student,
+    error: studentError,
+    mutate: getStudentInfo,
+  } = useMutation({
+    mutationKey: ["studentBookById"],
+    mutationFn: getStudentByBookId,
+    onSuccess: () => toggleDialog(),
+    onError: (error) => {
+      toast(`❌  ${error.message}`);
+    },
+  });
+
+  const toggleDialog = () => setOpen(!open);
+
   return (
     // Data Grid will fill the size of the parent container
-    <div className="">
+    <div>
       <h2 className="text-center text-3xl my-3 tracking-wider">Books List</h2>
       {error && (
         <p className="text-2xl text-red-500 tracking-wide text-center">
           {error.message}
         </p>
       )}
-      <div className="px-3 my-3">
+      <div className="px-3 my-3 rounded-md">
         <div className="border flex my-3 p-2 max-w-sm rounded-md">
           <Search color="gray" />
           <input
@@ -107,6 +130,11 @@ const Dashboard = () => {
           />
         </div>
       </div>
+      <StudentDialog
+        open={open}
+        onOpenChange={toggleDialog}
+        student={student}
+      />
     </div>
   );
 };

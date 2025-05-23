@@ -66,3 +66,41 @@ export const getSingleStudent = async (id) => {
 
   return student;
 };
+
+// 1. we are extracting studentid with which it is associated with bookId from student_books
+// 2. know with studentId search student full details (name,class, city and all)
+export const getStudentByBookId = async (bookId) => {
+  console.log("start api");
+  const { data: student_books, error } = await supabase
+    .from("student_books")
+    .select("student_id")
+    .eq("book_id", bookId)
+    .maybeSingle();
+
+  if (error) {
+    console.log(error);
+    throw new Error(
+      "Error while getting StudentId with bookId.Try again later"
+    );
+  }
+  if (!student_books) {
+    console.log(error);
+    throw new Error("This book is not assigned to any student");
+  }
+
+  const { data: student, error: studentError } = await supabase
+    .from("students")
+    .select("*")
+    .eq("id", student_books.student_id)
+    .maybeSingle();
+
+  if (studentError) {
+    console.log(error);
+    throw new Error(
+      "Error while getting Student details with studentId.Try again later"
+    );
+  }
+  console.log("from api", student);
+
+  return student;
+};
