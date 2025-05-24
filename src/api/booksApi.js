@@ -121,6 +121,5 @@ export const getAssignedBooks = async () => {
       "Error while getting list of assigned book details.Try again later"
     );
   }
-  console.log("from api assigned books", books);
   return books;
 };

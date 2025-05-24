@@ -70,7 +70,6 @@ export const getSingleStudent = async (id) => {
 // 1. we are extracting studentid with which it is associated with bookId from student_books
 // 2. know with studentId search student full details (name,class, city and all)
 export const getStudentByBookId = async (bookId) => {
-  console.log("start api");
   const { data: student_books, error } = await supabase
     .from("student_books")
     .select("student_id")
@@ -100,7 +99,6 @@ export const getStudentByBookId = async (bookId) => {
       "Error while getting Student details with studentId.Try again later"
     );
   }
-  console.log("from api", student);
 
   return student;
 };
