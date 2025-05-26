@@ -15,7 +15,34 @@ export const getBooks = async () => {
 };
 
 export const addBook = async (book) => {
-  const { data, error } = await supabase.from("books").insert([book]).select();
+  const { image, ...rest } = book;
+
+  let imageUrl = "";
+  if (image) {
+    try {
+      const imageName = `${Date.now()}_${image.name}`;
+      const { data, error } = await supabase.storage
+        .from("book-images")
+        .upload(imageName, image);
+      if (error) {
+        throw new Error("Error while uploading image. Try again later");
+      }
+      console.log("uploaded image", data);
+      console.log("onlyfullPath", data.fullPath);
+      imageUrl = `${
+        import.meta.env.VITE_PROJECT_URL
+      }/storage/v1/object/public/${data.fullPath}`;
+    } catch (error) {
+      imageUrl = "";
+      console.log("error");
+      throw new Error(error.message);
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("books")
+    .insert([{ ...rest, image: imageUrl }])
+    .select();
 
   if (error) {
     console.log(error);
@@ -56,10 +83,22 @@ export const getSingleBook = async (id) => {
 };
 
 // delete book
+export const deleteBook = async ({id,image}) => {
+  if(image){
+     const { error } = await supabase
+  .storage
+  .from('book-images')
+  .remove([image.split('/').pop()]);
+  if (error) {
+    console.log(error);
+    throw new Error("Error while deleteing image of book.Try again later");
+  }
 
-export const deleteBook = async (id) => {
+
+  }
   const { data, error } = await supabase.from("books").delete().eq("id", id);
 
+ 
   if (error) {
     console.log(error);
     throw new Error("Error while deleting book. Try again later");

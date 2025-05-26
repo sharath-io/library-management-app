@@ -36,3 +36,5 @@ export const menuItems = [
         path:'/'
     }
 ]
+
+export const MAX_FILE_UPLOAD_SIZE = 1 //1MB

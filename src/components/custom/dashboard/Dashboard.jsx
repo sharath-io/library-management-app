@@ -69,7 +69,10 @@ const Dashboard = () => {
               "Are you sure you want to delete selected book"
             );
             if (resp) {
-              mutate(params.data.id);
+              mutate({
+                id:params.data.id,
+                image:params.data.image
+              });
             }
           }}
         >

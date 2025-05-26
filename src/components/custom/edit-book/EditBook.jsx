@@ -48,7 +48,7 @@ const EditBook = () => {
   };
   return (
     <div>
-      <h2 className="text-3xl text-center tracking-wdider">Edit Book : {id}</h2>
+      <h2 className="text-3xl text-center tracking-wdider my-5">Edit Book : {id}</h2>
       {error && (
         <p className="text-center text-2xl text-red-500">{error.message}</p>
       )}
