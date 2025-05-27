@@ -28,14 +28,20 @@ const StudentsList = () => {
   });
 
   const colDefs = useRef([
-    { field: "first_name" },
+    { field: "first_name",maxWidth: 130  },
     {
       field: "middle_name",
+      maxWidth: 130,
       cellRenderer: (params) => {
         return params.data.middle_name || <span>&mdash;</span>;
       },
     },
-    { field: "last_name", maxWidth: 100 },
+    { field: "last_name", maxWidth: 130 },
+    {
+      field: "studentId",
+      cellRenderer: (params) => <span>{`STU${params.data.id}`}</span>,
+      maxWidth: 120,
+    },
     { field: "class", maxWidth: 100 },
     { field: "address", maxWidth: 100 },
     { field: "city", maxWidth: 100 },
@@ -44,7 +50,7 @@ const StudentsList = () => {
     { field: "phone", maxWidth: 150 },
     {
       field: "edit",
-      maxWidth: 100,
+      maxWidth: 70,
       cellRenderer: (params) => (
         <div
           className="py-2 cursor-pointer"
@@ -56,7 +62,7 @@ const StudentsList = () => {
     },
     {
       field: "delete",
-      maxWidth: 100,
+      maxWidth: 80,
       cellRenderer: (params) => (
         <div
           className="py-2 cursor-pointer"

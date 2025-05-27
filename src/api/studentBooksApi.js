@@ -1,4 +1,5 @@
 import supabase from "@/utils/supabase";
+import { data } from "react-router-dom";
 
 export const issueBook = async ({ book_id, student_id }) => {
   const { data, error } = await supabase
@@ -62,3 +63,57 @@ export const getBooksByStudentId= async (studentId) => {
   }
   return books;
 };
+
+
+export const getAnalyticsByStudentId= async({studentId,date}) =>{
+  // extract books by studentId
+  console.log('start nw api', studentId)
+
+  const { data, error:analyticsError} = await supabase
+    .from("student_books")
+    .select("book_id, student_id")
+    .eq("student_id", studentId)
+    .gte("created_at",date.from.toISOString())
+    .lte("created_at", date.to.toISOString())
+
+    if (analyticsError) {
+    throw new Error(
+      "Error while getting analytics data. Try again later"
+    );
+  }
+
+  if(data?.length===0){
+    throw new Error(" No issued books found with provided data")
+  }
+
+  const bookIds = data.map(item => item.book_id);
+
+const {data:books, error:booksError } = await supabase
+    .from("books")
+    .select("*, student_books(created_at)")
+    .in("id",bookIds )
+
+    if (booksError) {
+    throw new Error(
+      "Error while getting analytics books data of student. Try again later"
+    );
+  }
+
+
+    const {data:student, error:studentError } = await supabase
+    .from("students")
+    .select("*")
+    .eq("id", studentId)
+    .maybeSingle();
+
+    if (studentError) {
+    throw new Error(
+      "Error while getting analytics data of student. Try again later"
+    );
+  }
+
+
+    console.log('finally', {books, student})
+    return {books, student};
+
+}
